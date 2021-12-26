@@ -17,23 +17,40 @@ import rl from '../../public/pieces/rl.svg'
 const MainComp = () => {
   const [board, setBoard] = useState<any[]>([])
 
-  const pieceStartPositions: { [key: number]: any; } = {
-    0: rd,
-    1: nd,
-    2: bd,
-    3: qd,
-    4: kd,
-    5: bd,
-    6: nd,
-    7: rd,
-    8: pd,
-    9: pd,
-    10: pd,
-    11: pd,
-    12: pd,
-    13: pd,
-    14: pd,
-    15: pd
+  const pieceStartPositions: { [key: number]: {pieceType: string, icon: any}; } = {
+    0: { pieceType: 'rook', icon: rd },
+    1: { pieceType: 'bishop', icon: bd },
+    2: { pieceType: 'knight', icon: nd },
+    3: { pieceType: 'queen', icon: qd },
+    4: { pieceType: 'king', icon: kd },
+    5: { pieceType: 'knight', icon: nd },
+    6: { pieceType: 'bishop', icon: bd },
+    7: { pieceType: 'rook', icon: rd },
+    8: { pieceType: 'pawn', icon: pd },
+    9: { pieceType: 'pawn', icon: pd },
+    10: { pieceType: 'pawn', icon: pd },
+    11: { pieceType: 'pawn', icon: pd },
+    12: { pieceType: 'pawn', icon: pd },
+    13: { pieceType: 'pawn', icon: pd },
+    14: { pieceType: 'pawn', icon: pd },
+    15: { pieceType: 'pawn', icon: pd },
+
+    48: { pieceType: 'pawn', icon: pl },
+    49: { pieceType: 'pawn', icon: pl },
+    50: { pieceType: 'pawn', icon: pl },
+    51: { pieceType: 'pawn', icon: pl },
+    52: { pieceType: 'pawn', icon: pl },
+    53: { pieceType: 'pawn', icon: pl },
+    54: { pieceType: 'pawn', icon: pl },
+    55: { pieceType: 'pawn', icon: pl },
+    56: { pieceType: 'rook', icon: rl },
+    57: { pieceType: 'bishop', icon: bl },
+    58: { pieceType: 'knight', icon: nl },
+    59: { pieceType: 'queen', icon: ql },
+    60: { pieceType: 'king', icon: kl },
+    61: { pieceType: 'knight', icon: nl },
+    62: { pieceType: 'bishop', icon: bl },
+    63: { pieceType: 'rook', icon: rl }
   }
 
   useEffect(() => {
@@ -53,6 +70,10 @@ const MainComp = () => {
     console.log(board)
   }, [board])
 
+  const getPossibleMoves = (piece, pos) => {
+
+  }
+
   return (
     <div className='parent-container'>
         <div className='container'>
@@ -62,7 +83,7 @@ const MainComp = () => {
               return (
               <div key={idx} className={tile.color + ' tile w-full bg-black' } >
                   {
-                      tile.piece ? <Image src={tile.piece.src} width="100%" height="100%" /> : <div className='bg-black' />
+                    tile.piece ? <Image src={tile.piece.icon.src} width="100%" height="100%" /> : <div className='bg-black' />
                   }
               </div>
 
