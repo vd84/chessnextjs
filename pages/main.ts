@@ -1,3 +1,3 @@
-import MainComp from "../components/main";
+import MainComp from '../components/main'
 
 export default MainComp
