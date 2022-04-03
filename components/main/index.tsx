@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 
+import getMoves from '../../utils/calculateMoves'
+
 import bd from '../../public/pieces/bd.svg'
 import bl from '../../public/pieces/bl.svg'
 import kd from '../../public/pieces/kd.svg'
@@ -17,51 +19,57 @@ import rl from '../../public/pieces/rl.svg'
 const MainComp = () => {
   const [board, setBoard] = useState<any[]>([])
 
-  const pieceStartPositions: { [key: number]: {pieceType: string, icon: any}; } = {
-    0: { pieceType: 'rook', icon: rd },
-    1: { pieceType: 'bishop', icon: bd },
-    2: { pieceType: 'knight', icon: nd },
-    3: { pieceType: 'queen', icon: qd },
-    4: { pieceType: 'king', icon: kd },
-    5: { pieceType: 'knight', icon: nd },
-    6: { pieceType: 'bishop', icon: bd },
-    7: { pieceType: 'rook', icon: rd },
-    8: { pieceType: 'pawn', icon: pd },
-    9: { pieceType: 'pawn', icon: pd },
-    10: { pieceType: 'pawn', icon: pd },
-    11: { pieceType: 'pawn', icon: pd },
-    12: { pieceType: 'pawn', icon: pd },
-    13: { pieceType: 'pawn', icon: pd },
-    14: { pieceType: 'pawn', icon: pd },
-    15: { pieceType: 'pawn', icon: pd },
+  const [piecePositions, setPiecePositions] = useState<{[key: number]: any}>(
+    {
+      0: [{ pieceType: 'rook', color: 'black', icon: rd, col: 0, row: 0, id: 0 },
+        { pieceType: 'bishop', color: 'black', icon: bd, col: 1, row: 0, id: 1 },
+        { pieceType: 'knight', color: 'black', icon: nd, col: 2, row: 0, id: 2 },
+        { pieceType: 'queen', color: 'black', icon: qd, col: 3, row: 0, id: 3 },
+        { pieceType: 'king', color: 'black', icon: kd, col: 4, row: 0, id: 4 },
+        { pieceType: 'knight', color: 'black', icon: nd, col: 5, row: 0, id: 5 },
+        { pieceType: 'bishop', color: 'black', icon: bd, col: 6, row: 0, id: 6 },
+        { pieceType: 'rook', color: 'black', icon: rd, col: 7, row: 0, id: 7 }],
+      1: [{ pieceType: 'pawn', color: 'black', icon: pd, col: 0, row: 1, id: 8 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 1, row: 1, id: 9 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 2, row: 1, id: 10 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 3, row: 1, id: 11 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 4, row: 1, id: 12 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 5, row: 1, id: 13 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 6, row: 1, id: 14 },
+        { pieceType: 'pawn', color: 'black', icon: pd, col: 7, row: 1, id: 15 }],
 
-    48: { pieceType: 'pawn', icon: pl },
-    49: { pieceType: 'pawn', icon: pl },
-    50: { pieceType: 'pawn', icon: pl },
-    51: { pieceType: 'pawn', icon: pl },
-    52: { pieceType: 'pawn', icon: pl },
-    53: { pieceType: 'pawn', icon: pl },
-    54: { pieceType: 'pawn', icon: pl },
-    55: { pieceType: 'pawn', icon: pl },
-    56: { pieceType: 'rook', icon: rl },
-    57: { pieceType: 'bishop', icon: bl },
-    58: { pieceType: 'knight', icon: nl },
-    59: { pieceType: 'queen', icon: ql },
-    60: { pieceType: 'king', icon: kl },
-    61: { pieceType: 'knight', icon: nl },
-    62: { pieceType: 'bishop', icon: bl },
-    63: { pieceType: 'rook', icon: rl }
-  }
+      6: [{ pieceType: 'pawn', color: 'white', icon: pl, col: 0, row: 6, id: 48 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 1, row: 6, id: 49 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 2, row: 6, id: 50 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 3, row: 6, id: 51 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 4, row: 6, id: 52 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 5, row: 6, id: 53 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 6, row: 6, id: 54 },
+        { pieceType: 'pawn', color: 'white', icon: pl, col: 7, row: 6, id: 55 }],
+      7: [{ pieceType: 'rook', color: 'white', icon: rl, col: 0, row: 7, id: 56 },
+        { pieceType: 'bishop', color: 'white', icon: bl, col: 1, row: 7, id: 57 },
+        { pieceType: 'knight', color: 'white', icon: nl, col: 2, row: 7, id: 58 },
+        { pieceType: 'queen', color: 'white', icon: ql, col: 3, row: 7, id: 59 },
+        { pieceType: 'king', color: 'white', icon: kl, col: 4, row: 7, id: 60 },
+        { pieceType: 'knight', color: 'white', icon: nl, col: 5, row: 7, id: 61 },
+        { pieceType: 'bishop', color: 'white', icon: bl, col: 6, row: 7, id: 62 },
+        { pieceType: 'rook', color: 'white', icon: rl, col: 7, row: 7, id: 63 }]
+    }
+  )
 
   useEffect(() => {
     const tempBoard: any[] = []
-    for (let i = 0; i < 64; i++) {
-      tempBoard.push({
-        col: i % 8 + 1,
-        row: Math.floor(i / 8) + 1,
-        color: ((i % 8 + 1) % 2) === ((Math.floor(i / 8) + 1) % 2) ? 'bg-gray-700' : 'bg-white',
-        piece: pieceStartPositions[i]
-      })
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        tempBoard.push({
+          col: i,
+          row: j,
+          color: (i % 2) === (j % 2) ? 'bg-gray-700' : 'bg-white',
+          piece: piecePositions[i] ? piecePositions[i][j] : undefined,
+          id: i
+        })
+      }
     }
     setBoard(tempBoard)
   }, [])
@@ -70,10 +78,6 @@ const MainComp = () => {
     console.log(board)
   }, [board])
 
-  const getPossibleMoves = (piece, pos) => {
-
-  }
-
   return (
     <div className='parent-container'>
         <div className='container'>
@@ -81,10 +85,11 @@ const MainComp = () => {
         {
             board.map((tile, idx) => {
               return (
-              <div key={idx} className={tile.color + ' tile w-full bg-black' } >
-                  {
-                    tile.piece ? <Image src={tile.piece.icon.src} width="100%" height="100%" /> : <div className='bg-black' />
-                  }
+              <div key={idx} className={tile.color + ' tile w-full' } >
+                    <div>
+                    { tile.piece && tile.piece.icon ? <Image src={tile.piece.icon.src} width="100%" height="100%" /> : <div className='bg-black' />}
+                    </div>
+
               </div>
 
               )
