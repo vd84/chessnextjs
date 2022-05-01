@@ -24,47 +24,60 @@ export type Piece = {
   row: number,
   id: number,
   moves: []
-  hasMoved?: boolean
+  amountMoves: number
 }
+
+const blackForwards =
+  [{ pieceType: 'rook', color: 'black', icon: rd, col: 0, row: 0, id: 0, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'black', icon: bd, col: 1, row: 0, id: 1, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'black', icon: nd, col: 2, row: 0, id: 2, moves: [], amountMoves: 0 },
+  { pieceType: 'queen', color: 'black', icon: qd, col: 3, row: 0, id: 3, moves: [], amountMoves: 0 },
+  { pieceType: 'king', color: 'black', icon: kd, col: 4, row: 0, id: 4, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'black', icon: nd, col: 5, row: 0, id: 5, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'black', icon: bd, col: 6, row: 0, id: 6, moves: [], amountMoves: 0 },
+  { pieceType: 'rook', color: 'black', icon: rd, col: 7, row: 0, id: 7, moves: [], amountMoves: 0 }]
+
+const blackPawns =
+  [{ pieceType: 'pawn', color: 'black', icon: pd, col: 0, row: 1, id: 8, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 1, row: 1, id: 9, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 2, row: 1, id: 10, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 3, row: 1, id: 11, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 4, row: 1, id: 12, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 5, row: 1, id: 13, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 6, row: 1, id: 14, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'black', icon: pd, col: 7, row: 1, id: 15, moves: [], amountMoves: 0 }]
+
+const whitePawns =
+  [{ pieceType: 'pawn', color: 'white', icon: pl, col: 0, row: 6, id: 48, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 1, row: 6, id: 49, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 2, row: 6, id: 50, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 3, row: 6, id: 51, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 4, row: 6, id: 52, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 5, row: 6, id: 53, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 6, row: 6, id: 54, moves: [], amountMoves: 0 },
+  { pieceType: 'pawn', color: 'white', icon: pl, col: 7, row: 6, id: 55, moves: [], amountMoves: 0 }]
+
+const whiteForwards =
+  [{ pieceType: 'rook', color: 'white', icon: rl, col: 0, row: 7, id: 56, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'white', icon: bl, col: 1, row: 7, id: 57, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'white', icon: nl, col: 2, row: 7, id: 58, moves: [], amountMoves: 0 },
+  { pieceType: 'queen', color: 'white', icon: ql, col: 3, row: 7, id: 59, moves: [], amountMoves: 0 },
+  { pieceType: 'king', color: 'white', icon: kl, col: 4, row: 7, id: 60, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'white', icon: nl, col: 5, row: 7, id: 61, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'white', icon: bl, col: 6, row: 7, id: 62, moves: [], amountMoves: 0 },
+  { pieceType: 'rook', color: 'white', icon: rl, col: 7, row: 7, id: 63, moves: [], amountMoves: 0 }]
 
 const MainComp = () => {
   const [board, setBoard] = useState<any[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
+  const [userColor, setUserColor] = useState('white')
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
     {
-      0: [{ pieceType: 'rook', color: 'black', icon: rd, col: 0, row: 0, id: 0, moves: [] },
-      { pieceType: 'bishop', color: 'black', icon: bd, col: 1, row: 0, id: 1, moves: [] },
-      { pieceType: 'knight', color: 'black', icon: nd, col: 2, row: 0, id: 2, moves: [] },
-      { pieceType: 'queen', color: 'black', icon: qd, col: 3, row: 0, id: 3, moves: [] },
-      { pieceType: 'king', color: 'black', icon: kd, col: 4, row: 0, id: 4, moves: [] },
-      { pieceType: 'knight', color: 'black', icon: nd, col: 5, row: 0, id: 5, moves: [] },
-      { pieceType: 'bishop', color: 'black', icon: bd, col: 6, row: 0, id: 6, moves: [] },
-      { pieceType: 'rook', color: 'black', icon: rd, col: 7, row: 0, id: 7, moves: [] }],
-      1: [{ pieceType: 'pawn', color: 'black', icon: pd, col: 0, row: 1, id: 8, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 1, row: 1, id: 9, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 2, row: 1, id: 10, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 3, row: 1, id: 11, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 4, row: 1, id: 12, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 5, row: 1, id: 13, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 6, row: 1, id: 14, moves: [] },
-      { pieceType: 'pawn', color: 'black', icon: pd, col: 7, row: 1, id: 15, moves: [] }],
+      0: userColor === 'white' ? blackForwards : whiteForwards,
+      1: userColor === 'white' ? blackPawns : whitePawns,
 
-      6: [{ pieceType: 'pawn', color: 'white', icon: pl, col: 0, row: 6, id: 48, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 1, row: 6, id: 49, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 2, row: 6, id: 50, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 3, row: 6, id: 51, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 4, row: 6, id: 52, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 5, row: 6, id: 53, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 6, row: 6, id: 54, moves: [] },
-      { pieceType: 'pawn', color: 'white', icon: pl, col: 7, row: 6, id: 55, moves: [] }],
-      7: [{ pieceType: 'rook', color: 'white', icon: rl, col: 0, row: 7, id: 56, moves: [] },
-      { pieceType: 'bishop', color: 'white', icon: bl, col: 1, row: 7, id: 57, moves: [] },
-      { pieceType: 'knight', color: 'white', icon: nl, col: 2, row: 7, id: 58, moves: [] },
-      { pieceType: 'queen', color: 'white', icon: ql, col: 3, row: 7, id: 59, moves: [] },
-      { pieceType: 'king', color: 'white', icon: kl, col: 4, row: 7, id: 60, moves: [] },
-      { pieceType: 'knight', color: 'white', icon: nl, col: 5, row: 7, id: 61, moves: [] },
-      { pieceType: 'bishop', color: 'white', icon: bl, col: 6, row: 7, id: 62, moves: [] },
-      { pieceType: 'rook', color: 'white', icon: rl, col: 7, row: 7, id: 63, moves: [] }]
+      6: userColor === 'white' ? whitePawns : blackPawns,
+      7: userColor === 'white' ? whiteForwards : blackForwards
     }
   )
 
@@ -76,7 +89,7 @@ const MainComp = () => {
         tempBoard.push({
           col: i,
           row: j,
-          color: (i % 2) === (j % 2) ? 'bg-gray-700' : 'bg-white',
+          color: userColor === 'white' ? (i % 2) === (j % 2) ? 'bg-gray-700' : 'bg-white' : (i % 2) === (j % 2) ? 'bg-white' : 'bg-gray-700',
           piece: piecePositions[i] ? piecePositions[i][j] : undefined,
           id: id
         })
@@ -91,7 +104,7 @@ const MainComp = () => {
       if (board[i].piece) {
         const boardCopy = [...board]
         console.log(board[i].piece)
-        boardCopy[i].piece.moves = getMoves(board[i].piece, board)
+        boardCopy[i].piece.moves = getMoves(board[i].piece, board, userColor)
         setBoard(boardCopy)
       }
     }
@@ -103,7 +116,7 @@ const MainComp = () => {
     piece.id = tileId
     piece.col = col
     piece.row = row
-    piece.hasMoved = true
+    piece.amountMoves++
     boardCopy[tileId].piece = chosenPiece
     setBoard(boardCopy)
     setChosenPiece(undefined)
@@ -113,8 +126,8 @@ const MainComp = () => {
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
-        console.log(chosenPiece)
         if (!board[i].piece) continue
+        if (board[i].piece.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
           console.log('trying to take piece')
         }
