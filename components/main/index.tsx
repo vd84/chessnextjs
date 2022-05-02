@@ -120,7 +120,10 @@ const MainComp = () => {
   }, [board])
 
   useEffect(() => {
+    const startTime = performance.now()
     calculateMoves()
+    const endTime = performance.now()
+    console.log(`Call to calculatemoves took ${endTime - startTime} milliseconds`)
   }, [chosenPiece])
 
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
