@@ -174,6 +174,7 @@ const MainComp = () => {
                 justify-content:center;
                 width:600px;
                 height:600px;
+                
             }
             .board-wrapper {
                 display: grid;
