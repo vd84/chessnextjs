@@ -1,12 +1,12 @@
 import { Piece, Tile } from '../components/main'
 
 const existsNoPieceOnTile = (row: number, col: number, board: Tile[]) => {
-  console.log(col, row)
-  console.log(board.findIndex(x => x.row === row && x.col === col))
-  console.log(board[board.findIndex(x => x.row === row && x.col === col)]?.piece)
-  return board.find(x => x.row === row && x.col === col)?.piece === undefined
+  return getPieceOnTile(row, col, board) === undefined
 }
 
+const getPieceOnTile = (row: number, col: number, board: Tile[]) => {
+  return board.find(x => x.row === row && x.col === col)?.piece
+}
 const getMoves = (piece: Piece, board: any, userColor: string) => {
   switch (piece.pieceType) {
     case 'pawn':
@@ -36,6 +36,9 @@ const getPawnMoves = (piece: Piece, board: any, userColor: string) => {
     moves.push({ row: piece.row - 1, col: piece.col + 1 })
   }
   if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id + 1].piece?.amountMoves === 1) {
+    moves.push({ row: piece.row - 1, col: piece.col - 1 })
+  }
+  if (getPieceOnTile(piece.row - 1, piece.col - 1, board)?.color !== userColor) {
     moves.push({ row: piece.row - 1, col: piece.col - 1 })
   }
   return moves

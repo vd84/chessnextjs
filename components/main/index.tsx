@@ -111,7 +111,6 @@ const MainComp = () => {
     for (let i = 0; i < board.length; i++) {
       if (board[i].piece) {
         const boardCopy = [...board]
-        console.log(board[i].piece)
         boardCopy[i].piece?.moves = getMoves(board[i].piece, board, userColor)
         setBoard(boardCopy)
         console.log('hhll')
@@ -139,13 +138,15 @@ const MainComp = () => {
   }, [board])
 
   const onClickTile = useCallback((tileId, row, col) => {
+    console.log(board[tileId])
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
         if (!board[i].piece) continue
-        if (board[i].piece?.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
-          console.log('trying to take piece')
+          if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
+          movePiece(chosenPiece, tileId, col, row)
+          return
         }
         setChosenPiece(board[i].piece)
         foundPiece = true
