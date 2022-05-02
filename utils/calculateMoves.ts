@@ -13,6 +13,8 @@ const getMoves = (piece: Piece, board: any, userColor: string) => {
       return getPawnMoves(piece, board, userColor)
     case 'rook':
       return getRookMoves(piece, board, userColor)
+    case 'bishop':
+      return getBishopMoves(piece, board, userColor)
     default:
       return []
     // code block
@@ -53,6 +55,31 @@ const getRookMoves = (piece: Piece, board: Tile[], userColor: string) => {
   for (let i = 1; i < 8; i++) {
     if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board)) {
       moves.push({ row: piece.row, col: piece.col + i })
+    } else break
+  }
+  return moves
+}
+
+const getBishopMoves = (piece: Piece, board: Tile[], userColor: string) => {
+  const moves = []
+  for (let i = 1; i < 8; i++) {
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col + i, board)) {
+      moves.push({ row: piece.row + i, col: piece.col + i })
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col - i, board)) {
+      moves.push({ row: piece.row - i, col: piece.col - i })
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col - i, board)) {
+      moves.push({ row: piece.row + i, col: piece.col - i })
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col + i, board)) {
+      moves.push({ row: piece.row - i, col: piece.col + i })
     } else break
   }
   return moves

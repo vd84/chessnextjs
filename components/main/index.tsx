@@ -163,7 +163,6 @@ const MainComp = () => {
               return (
                 <div key={idx} className={tile.color + ' tile w-full'} onClick={() => onClickTile(tile.id, tile.row, tile.col)} >
                   <div>
-                    {tile.row + ',' + '' + tile.col}
                     {tile.piece && tile.piece.icon
                       ? <Image src={tile.piece.icon.src} width="100%" height="100%" className={tile.id === chosenPiece?.id ? 'bg-red-500' : ''} />
                       : <div />}
