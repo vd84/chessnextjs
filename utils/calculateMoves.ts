@@ -1,4 +1,11 @@
-import { Piece } from '../components/main'
+import { Piece, Tile } from '../components/main'
+
+const existsNoPieceOnTile = (row: number, col: number, board: Tile[]) => {
+  console.log(col, row)
+  console.log(board.findIndex(x => x.row === row && x.col === col))
+  console.log(board[board.findIndex(x => x.row === row && x.col === col)]?.piece)
+  return board.find(x => x.row === row && x.col === col)?.piece === undefined
+}
 
 const getMoves = (piece: Piece, board: any, userColor: string) => {
   switch (piece.pieceType) {
@@ -26,14 +33,23 @@ const getPawnMoves = (piece: Piece, board: any, userColor: string) => {
   return moves
 }
 
-const getRookMoves = (piece: Piece, board: any, userColor: string) => {
+const getRookMoves = (piece: Piece, board: Tile[], userColor: string) => {
   const moves = []
-  for (let i = 0; i < 8; i++) {
-    moves.push({ row: piece.row + i, col: piece.col })
-    moves.push({ row: piece.row - i, col: piece.col })
-    moves.push({ row: piece.row, col: piece.col + i })
-    moves.push({ row: piece.row, col: piece.col - i })
+  for (let i = 1; i < 8; i++) {
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col, board)) {
+      moves.push({ row: piece.row + i, col: piece.col })
+    }
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col, board)) {
+      moves.push({ row: piece.row - i, col: piece.col })
+    }
+    if (piece.col - i >= 0 && existsNoPieceOnTile(piece.row, piece.col - i, board)) {
+      moves.push({ row: piece.row, col: piece.col - i })
+    }
+    if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board)) {
+      moves.push({ row: piece.row, col: piece.col + i })
+    }
   }
+  console.log(moves)
 
   return moves
 }

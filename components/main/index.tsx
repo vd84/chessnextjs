@@ -23,8 +23,16 @@ export type Piece = {
   col: number,
   row: number,
   id: number,
-  moves: []
+  moves: { col: number, row: number }[]
   amountMoves: number
+}
+
+export type Tile = {
+  col: number,
+  color: string,
+  id: number,
+  piece?: Piece,
+  row: number
 }
 
 const blackForwards =
@@ -68,7 +76,7 @@ const whiteForwards =
   { pieceType: 'rook', color: 'white', icon: rl, col: 7, row: 7, id: 63, moves: [], amountMoves: 0 }]
 
 const MainComp = () => {
-  const [board, setBoard] = useState<any[]>([])
+  const [board, setBoard] = useState<Tile[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
   const [userColor, setUserColor] = useState('white')
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
@@ -80,6 +88,9 @@ const MainComp = () => {
       7: userColor === 'white' ? whiteForwards : blackForwards
     }
   )
+  useEffect(() => {
+    calculateMoves()
+  }, [])
 
   useEffect(() => {
     const tempBoard: any[] = []
@@ -87,8 +98,8 @@ const MainComp = () => {
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
         tempBoard.push({
-          col: i,
-          row: j,
+          col: j,
+          row: i,
           color: userColor === 'white' ? (i % 2) === (j % 2) ? 'bg-gray-700' : 'bg-white' : (i % 2) === (j % 2) ? 'bg-white' : 'bg-gray-700',
           piece: piecePositions[i] ? piecePositions[i][j] : undefined,
           id: id
@@ -99,18 +110,19 @@ const MainComp = () => {
     setBoard(tempBoard)
   }, [])
 
-  useEffect(() => {
+  const calculateMoves = useCallback(() => {
     for (let i = 0; i < board.length; i++) {
       if (board[i].piece) {
         const boardCopy = [...board]
         console.log(board[i].piece)
-        boardCopy[i].piece.moves = getMoves(board[i].piece, board, userColor)
+        boardCopy[i].piece?.moves = getMoves(board[i].piece, board, userColor)
         setBoard(boardCopy)
+        console.log('hhll')
       }
     }
-  }, [chosenPiece])
+  }, [board])
 
-  const movePiece = (piece: Piece, tileId: number, col: any, row: any) => {
+  const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
     piece.id = tileId
@@ -120,14 +132,16 @@ const MainComp = () => {
     boardCopy[tileId].piece = chosenPiece
     setBoard(boardCopy)
     setChosenPiece(undefined)
-  }
+    calculateMoves()
+  }, [board])
 
   const onClickTile = useCallback((tileId, row, col) => {
+    calculateMoves()
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
         if (!board[i].piece) continue
-        if (board[i].piece.color !== userColor) return
+        if (board[i].piece?.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
           console.log('trying to take piece')
         }
@@ -136,6 +150,8 @@ const MainComp = () => {
       }
     }
     if (!foundPiece && chosenPiece) {
+      console.log(row, col)
+      console.log(chosenPiece.moves.find(x => x.col === col && x.row === row))
       if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
       movePiece(chosenPiece, tileId, col, row)
     }
@@ -154,8 +170,9 @@ const MainComp = () => {
           {
             board.map((tile, idx) => {
               return (
-                <div key={idx} className={tile.color + ' tile w-full'} onClick={() => onClickTile(tile.id, tile.col, tile.row)} >
+                <div key={idx} className={tile.color + ' tile w-full'} onClick={() => onClickTile(tile.id, tile.row, tile.col)} >
                   <div>
+                    {tile.row + ',' + '' + tile.col}
                     {tile.piece && tile.piece.icon
                       ? <Image src={tile.piece.icon.src} width="100%" height="100%" className={tile.id === chosenPiece?.id ? 'bg-red-500' : ''} />
                       : <div />}
