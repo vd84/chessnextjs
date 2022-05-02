@@ -88,9 +88,6 @@ const MainComp = () => {
       7: userColor === 'white' ? whiteForwards : blackForwards
     }
   )
-  useEffect(() => {
-    calculateMoves()
-  }, [])
 
   useEffect(() => {
     const tempBoard: any[] = []
@@ -122,6 +119,10 @@ const MainComp = () => {
     }
   }, [board])
 
+  useEffect(() => {
+    calculateMoves()
+  }, [chosenPiece])
+
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
@@ -132,11 +133,9 @@ const MainComp = () => {
     boardCopy[tileId].piece = chosenPiece
     setBoard(boardCopy)
     setChosenPiece(undefined)
-    calculateMoves()
   }, [board])
 
   const onClickTile = useCallback((tileId, row, col) => {
-    calculateMoves()
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
@@ -150,18 +149,10 @@ const MainComp = () => {
       }
     }
     if (!foundPiece && chosenPiece) {
-      console.log(row, col)
-      console.log(chosenPiece.moves.find(x => x.col === col && x.row === row))
       if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
       movePiece(chosenPiece, tileId, col, row)
     }
   }, [piecePositions, chosenPiece, board])
-
-  useEffect(() => {
-    console.log('Chosen ', chosenPiece)
-    console.log('board', board)
-    console.log('piecePositions', piecePositions)
-  }, [board, piecePositions, chosenPiece])
 
   return (
     <div className='parent-container'>

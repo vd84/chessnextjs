@@ -38,19 +38,23 @@ const getRookMoves = (piece: Piece, board: Tile[], userColor: string) => {
   for (let i = 1; i < 8; i++) {
     if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col, board)) {
       moves.push({ row: piece.row + i, col: piece.col })
-    }
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
     if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col, board)) {
       moves.push({ row: piece.row - i, col: piece.col })
-    }
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
     if (piece.col - i >= 0 && existsNoPieceOnTile(piece.row, piece.col - i, board)) {
       moves.push({ row: piece.row, col: piece.col - i })
-    }
+    } else break
+  }
+  for (let i = 1; i < 8; i++) {
     if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board)) {
       moves.push({ row: piece.row, col: piece.col + i })
-    }
+    } else break
   }
-  console.log(moves)
-
   return moves
 }
 
