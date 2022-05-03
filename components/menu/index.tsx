@@ -1,8 +1,10 @@
 import React, { useCallback, useState } from 'react'
 import { getSessionId, initWs } from '../../utils/connect'
+import MainComp from '../main'
 
 const Menu = () => {
     const [loadingGame, setLoadingGame] = useState(false)
+    const [playing, setPlaying] = useState(false)
     const onHandlePlayClick = useCallback(async () => {
         console.log('whaat')
         setLoadingGame(true)
@@ -10,16 +12,18 @@ const Menu = () => {
         localStorage.setItem('sessionId', sessionId)
         initWs()
         setTimeout(() => {
-            window.location.href = '/main'
+            setPlaying(true)
         }, 3000)
     }, [])
     return (
         <div className='container'>
-            {loadingGame
-                ? <div className="loader">Loading<span className="loader__dot">.</span><span className="loader__dot">.</span><span className="loader__dot">.</span></div>
-                : <div>
-                    <button onClick={onHandlePlayClick}>Spela!</button>
-                </div>
+            {playing
+                ? <MainComp />
+                : loadingGame
+                    ? <div className="loader">Loading<span className="loader__dot">.</span><span className="loader__dot">.</span><span className="loader__dot">.</span></div>
+                    : <div>
+                        <button onClick={onHandlePlayClick}>Spela!</button>
+                    </div>
             }
             <style jsx>
                 {`
