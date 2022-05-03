@@ -37,12 +37,12 @@ export type Tile = {
 
 const blackForwards =
   [{ pieceType: 'rook', color: 'black', icon: rd, col: 0, row: 0, id: 0, moves: [], amountMoves: 0 },
-  { pieceType: 'bishop', color: 'black', icon: bd, col: 1, row: 0, id: 1, moves: [], amountMoves: 0 },
-  { pieceType: 'knight', color: 'black', icon: nd, col: 2, row: 0, id: 2, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'black', icon: nd, col: 1, row: 0, id: 1, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'black', icon: bd, col: 2, row: 0, id: 2, moves: [], amountMoves: 0 },
   { pieceType: 'queen', color: 'black', icon: qd, col: 3, row: 0, id: 3, moves: [], amountMoves: 0 },
   { pieceType: 'king', color: 'black', icon: kd, col: 4, row: 0, id: 4, moves: [], amountMoves: 0 },
-  { pieceType: 'knight', color: 'black', icon: nd, col: 5, row: 0, id: 5, moves: [], amountMoves: 0 },
-  { pieceType: 'bishop', color: 'black', icon: bd, col: 6, row: 0, id: 6, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'black', icon: bd, col: 5, row: 0, id: 5, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'black', icon: nd, col: 6, row: 0, id: 6, moves: [], amountMoves: 0 },
   { pieceType: 'rook', color: 'black', icon: rd, col: 7, row: 0, id: 7, moves: [], amountMoves: 0 }]
 
 const blackPawns =
@@ -67,12 +67,12 @@ const whitePawns =
 
 const whiteForwards =
   [{ pieceType: 'rook', color: 'white', icon: rl, col: 0, row: 7, id: 56, moves: [], amountMoves: 0 },
-  { pieceType: 'bishop', color: 'white', icon: bl, col: 1, row: 7, id: 57, moves: [], amountMoves: 0 },
-  { pieceType: 'knight', color: 'white', icon: nl, col: 2, row: 7, id: 58, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'white', icon: nl, col: 1, row: 7, id: 57, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'white', icon: bl, col: 2, row: 7, id: 58, moves: [], amountMoves: 0 },
   { pieceType: 'queen', color: 'white', icon: ql, col: 3, row: 7, id: 59, moves: [], amountMoves: 0 },
   { pieceType: 'king', color: 'white', icon: kl, col: 4, row: 7, id: 60, moves: [], amountMoves: 0 },
-  { pieceType: 'knight', color: 'white', icon: nl, col: 5, row: 7, id: 61, moves: [], amountMoves: 0 },
-  { pieceType: 'bishop', color: 'white', icon: bl, col: 6, row: 7, id: 62, moves: [], amountMoves: 0 },
+  { pieceType: 'bishop', color: 'white', icon: bl, col: 5, row: 7, id: 61, moves: [], amountMoves: 0 },
+  { pieceType: 'knight', color: 'white', icon: nl, col: 6, row: 7, id: 62, moves: [], amountMoves: 0 },
   { pieceType: 'rook', color: 'white', icon: rl, col: 7, row: 7, id: 63, moves: [], amountMoves: 0 }]
 
 const MainComp = () => {
@@ -97,7 +97,7 @@ const MainComp = () => {
         tempBoard.push({
           col: j,
           row: i,
-          color: userColor === 'white' ? (i % 2) === (j % 2) ? 'bg-gray-700' : 'bg-white' : (i % 2) === (j % 2) ? 'bg-white' : 'bg-gray-700',
+          color: (i % 2) === (j % 2) ? 'bg-white' : 'bg-gray-700',
           piece: piecePositions[i] ? piecePositions[i][j] : undefined,
           id: id
         })
