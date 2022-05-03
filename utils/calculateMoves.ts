@@ -28,18 +28,20 @@ const getMoves = (piece: Piece, board: any, userColor: string) => {
 }
 
 const getPawnMoves = (piece: Piece, board: any, userColor: string) => {
-  const moves = [{ row: piece.row - 1, col: piece.col }]
+  const m = userColor === 'white' ? 1 : -1
+  console.log(m)
+  const moves = [{ row: piece.row - 1 * m, col: piece.col }]
   if (piece.amountMoves === 0) {
-    moves.push({ row: piece.row - 2, col: piece.col })
+    moves.push({ row: piece.row - 2 * m, col: piece.col })
   }
-  if (board[piece.id + 1].piece?.pieceType === 'pawn' && board[piece.id + 1].piece?.amountMoves === 1) {
-    moves.push({ row: piece.row - 1, col: piece.col + 1 })
+  if (board[piece.id + 1 * m].piece?.pieceType === 'pawn' && board[piece.id + 1 * m].piece?.amountMoves === 1 * m) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col + 1 * m })
   }
-  if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id + 1].piece?.amountMoves === 1) {
-    moves.push({ row: piece.row - 1, col: piece.col - 1 })
+  if (board[piece.id - 1 * m].piece?.pieceType === 'pawn' && board[piece.id + 1 * m].piece?.amountMoves === 1 * m) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col - 1 * m })
   }
-  if (getPieceOnTile(piece.row - 1, piece.col - 1, board)?.color !== userColor) {
-    moves.push({ row: piece.row - 1, col: piece.col - 1 })
+  if (getPieceOnTile(piece.row - 1 * m, piece.col - 1 * m, board)?.color !== userColor) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col - 1 * m })
   }
   return moves
 }

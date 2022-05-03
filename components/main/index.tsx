@@ -81,11 +81,11 @@ const MainComp = () => {
   const [userColor, setUserColor] = useState('white')
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
     {
-      0: userColor === 'white' ? blackForwards : whiteForwards,
-      1: userColor === 'white' ? blackPawns : whitePawns,
+      7: whiteForwards,
+      6: whitePawns,
 
-      6: userColor === 'white' ? whitePawns : blackPawns,
-      7: userColor === 'white' ? whiteForwards : blackForwards
+      1: blackPawns,
+      0: blackForwards
     }
   )
 
@@ -143,6 +143,7 @@ const MainComp = () => {
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
         if (!board[i].piece) continue
+        if (board[i].piece?.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
           if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
           movePiece(chosenPiece, tileId, col, row)
@@ -160,13 +161,13 @@ const MainComp = () => {
 
   return (
     <div className='parent-container'>
-      <div className='container'>
+      <div className={'container ' + (userColor === 'black' ? 'rotate-180' : '')}>
         <div className="board-wrapper place-items-center" >
           {
             board.map((tile, idx) => {
               return (
-                <div key={idx} className={tile.color + ' tile w-full'} onClick={() => onClickTile(tile.id, tile.row, tile.col)} >
-                  <div>
+                <div key={idx} className={tile.color + ' tile w-full ' + (userColor === 'black' ? 'rotate-180' : '')} onClick={() => onClickTile(tile.id, tile.row, tile.col)} >
+                  <div className=''>
                     {tile.piece && tile.piece.icon
                       ? <Image src={tile.piece.icon.src} width="100%" height="100%" className={tile.id === chosenPiece?.id ? 'bg-red-500' : ''} />
                       : <div />}
@@ -198,7 +199,12 @@ const MainComp = () => {
                 aspect-ratio: 1;
                 width:88.5px;
                 height: 88.5px;
-            }            
+            }
+            img{
+              width:88.5px;
+              height: 88.5px;
+            }
+                        
             `}
         </style>
       </div>
