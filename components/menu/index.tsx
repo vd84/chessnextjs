@@ -1,9 +1,14 @@
 import React, { useCallback, useState } from 'react'
+import { getSessionId, initWs } from '../../utils/connect'
 
 const Menu = () => {
     const [loadingGame, setLoadingGame] = useState(false)
-    const onHandlePlayClick = useCallback(() => {
+    const onHandlePlayClick = useCallback(async () => {
+        console.log('whaat')
         setLoadingGame(true)
+        const sessionId = await getSessionId()
+        localStorage.setItem('sessionId', sessionId)
+        initWs()
         setTimeout(() => {
             window.location.href = '/main'
         }, 3000)

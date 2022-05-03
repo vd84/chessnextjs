@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 
 import getMoves from '../../utils/calculateMoves'
+import { sendMove, moves } from '../../utils/connect'
 
 import bd from '../../public/pieces/bd.svg'
 import bl from '../../public/pieces/bl.svg'
@@ -79,6 +80,7 @@ const MainComp = () => {
   const [board, setBoard] = useState<Tile[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
   const [userColor, setUserColor] = useState('white')
+  const [coolMoves, setCoolMoves] = useState()
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
     {
       7: whiteForwards,
@@ -113,7 +115,6 @@ const MainComp = () => {
         const boardCopy = [...board]
         boardCopy[i].piece?.moves = getMoves(board[i].piece, board, userColor)
         setBoard(boardCopy)
-        console.log('hhll')
       }
     }
   }, [board])
@@ -126,6 +127,7 @@ const MainComp = () => {
   }, [chosenPiece])
 
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
+    sendMove('hejsan')
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
     piece.id = tileId
@@ -159,8 +161,16 @@ const MainComp = () => {
     }
   }, [piecePositions, chosenPiece, board])
 
+  useEffect(() => {
+    console.log(moves)
+    setCoolMoves(moves)
+  }, [moves])
+
   return (
     <div className='parent-container'>
+      {
+        coolMoves && coolMoves.map((m, idx) => <p key={idx}>{m}</p>)
+      }
       <div className={'container ' + (userColor === 'black' ? 'rotate-180' : '')}>
         <div className="board-wrapper place-items-center" >
           {
