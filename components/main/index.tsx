@@ -127,7 +127,7 @@ const MainComp = () => {
   }, [chosenPiece])
 
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
-    sendMove('hejsan')
+    sendMove(piece.id + "," + tileId)
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
     piece.id = tileId
