@@ -5,7 +5,6 @@ let socket = null
 if (typeof window !== 'undefined') {
     socket = new WebSocket('ws://localhost:8080')
     socket.onmessage = function (event) {
-        alert(`[message] Data received from server: ${event.data}`)
         localStorage.setItem('moves', localStorage.getItem('moves') + event.data)
         moves.push(event.data)
         console.log(event.data)

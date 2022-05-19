@@ -145,7 +145,7 @@ const MainComp = () => {
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
         if (!board[i].piece) continue
-        if (board[i].piece?.color !== userColor) return
+        if (!chosenPiece && board[i].piece?.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
           if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
           movePiece(chosenPiece, tileId, col, row)
