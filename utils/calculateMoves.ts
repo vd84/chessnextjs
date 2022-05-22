@@ -1,6 +1,6 @@
 import { Piece, Tile } from '../components/main'
 
-const allPossibleMoves: { col: number, row: number, userColor: string }[] = []
+const allPossibleMoves: { col: number, row: number, pieceColor: string, attackMove: boolean }[] = []
 
 const existsNoPieceOnTile = (row: number, col: number, board: Tile[]) => {
   return getPieceOnTile(row, col, board) === undefined
@@ -10,34 +10,35 @@ const getPieceOnTile = (row: number, col: number, board: Tile[]) => {
   return board.find(x => x.row === row && x.col === col)?.piece
 }
 
-const moveExistsInOppositeColor = (row: number, col: number, userColor: string) => {
-  return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.userColor !== userColor) >= 0
+const attackMoveExistsInOppositeColor = (row: number, col: number, userColor: string) => {
+  console.log(allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove === true))
+  return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove === true) >= 0
 }
 
 const getMoves = (piece: Piece, board: any, userColor: string) => {
   switch (piece.pieceType) {
     case 'pawn':
-      const pawnMoves = getPawnMoves(piece, board, userColor)
+      const pawnMoves = getPawnMoves(piece, board, userColor, piece.color)
       allPossibleMoves.push(...pawnMoves)
       return pawnMoves;
     case 'rook':
-      const rookMoves = getRookMoves(piece, board, userColor)
+      const rookMoves = getRookMoves(piece, board, piece.color)
       allPossibleMoves.push(...rookMoves)
       return rookMoves
     case 'bishop':
-      const bishopMoves = getBishopMoves(piece, board, userColor)
+      const bishopMoves = getBishopMoves(piece, board, piece.color)
       allPossibleMoves.push(...bishopMoves)
       return bishopMoves;
     case 'king':
-      const kingMoves = getKingMoves(piece, board, userColor)
+      const kingMoves = getKingMoves(piece, board, piece.color)
       allPossibleMoves.push(...kingMoves)
       return kingMoves;
     case 'knight':
-      const knightMoves = getKnightMoves(piece, board, userColor)
+      const knightMoves = getKnightMoves(piece, board, piece.color)
       allPossibleMoves.push(...knightMoves)
       return knightMoves;
     case 'queen':
-      const queenMoves = [...getBishopMoves(piece, board, userColor), ...getRookMoves(piece, board, userColor)]
+      const queenMoves = [...getBishopMoves(piece, board, piece.color), ...getRookMoves(piece, board, userColor)]
       allPossibleMoves.push(...queenMoves)
       return queenMoves;
     default:
@@ -46,138 +47,137 @@ const getMoves = (piece: Piece, board: any, userColor: string) => {
   }
 }
 
-const getPawnMoves = (piece: Piece, board: Tile[], userColor: string) => {
-  const m = userColor === 'white' ? 1 : -1
-  const moves = []
+const getPawnMoves = (piece: Piece, board: Tile[], userColor: string, pieceColor: string) => {
+  const m = piece.color === 'white' ? 1 : -1
+
+  const moves: { col: number, row: number, pieceColor: string, attackMove: boolean }[] = []
   if (existsNoPieceOnTile(piece.row - 1 * m, piece.col, board)) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col, userColor: userColor })
+    moves.push({ row: piece.row - 1 * m, col: piece.col, pieceColor: pieceColor, attackMove: false })
   }
-  if (piece.amountMoves === 0 && existsNoPieceOnTile(piece.row - 2, piece.col, board)) {
-    moves.push({ row: piece.row - 2 * m, col: piece.col, userColor: userColor })
+  if (piece.amountMoves === 0 && existsNoPieceOnTile(piece.row - 2 * m, piece.col, board)) {
+    moves.push({ row: piece.row - 2 * m, col: piece.col, pieceColor: pieceColor, attackMove: false })
   }
-  if (board[piece.id + 1 * m].piece?.pieceType === 'pawn' && board[piece.id + 1 * m].piece?.color !== userColor && board[piece.id + 1 * m].piece?.amountMoves === 1 * m) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col + 1 * m, userColor: userColor })
+  if (board[piece.id + 1].piece?.pieceType === 'pawn' && board[piece.id + 1].piece?.color !== userColor && board[piece.id + 1].piece?.amountMoves === 1) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: false })
   }
-  if (board[piece.id - 1 * m].piece?.pieceType === 'pawn' && board[piece.id - 1 * m].piece?.color !== userColor && board[piece.id + 1 * m].piece?.amountMoves === 1 * m) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col - 1 * m, userColor: userColor })
+  if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id - 1].piece?.color !== userColor && board[piece.id + 1].piece?.amountMoves === 1) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: false })
   }
-  if (getPieceOnTile(piece.row - 1 * m, piece.col - 1 * m, board) && getPieceOnTile(piece.row - 1 * m, piece.col - 1 * m, board)?.color !== userColor) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col - 1 * m, userColor: userColor })
+  if (getPieceOnTile(piece.row - 1 * m, piece.col - 1, board)) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
   }
-  if (getPieceOnTile(piece.row - 1 * m, piece.col + 1 * m, board) && getPieceOnTile(piece.row - 1 * m, piece.col + 1 * m, board)?.color !== userColor) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col + 1 * m, userColor: userColor })
+  if (getPieceOnTile(piece.row - 1 * m, piece.col + 1, board)) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: true })
   }
   return moves
 }
 
-const getRookMoves = (piece: Piece, board: Tile[], userColor: string) => {
+const getRookMoves = (piece: Piece, board: Tile[], pieceColor: string) => {
   const moves = []
   for (let i = 1; i < 8; i++) {
     if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col, board)) {
-      moves.push({ row: piece.row + i, col: piece.col, userColor: userColor })
+      moves.push({ row: piece.row + i, col: piece.col, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col, board)) {
-      moves.push({ row: piece.row - i, col: piece.col, userColor: userColor })
+      moves.push({ row: piece.row - i, col: piece.col, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.col - i >= 0 && existsNoPieceOnTile(piece.row, piece.col - i, board)) {
-      moves.push({ row: piece.row, col: piece.col - i, userColor: userColor })
+      moves.push({ row: piece.row, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board)) {
-      moves.push({ row: piece.row, col: piece.col + i, userColor: userColor })
+      moves.push({ row: piece.row, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   return moves
 }
 
-const getBishopMoves = (piece: Piece, board: Tile[], userColor: string) => {
+const getBishopMoves = (piece: Piece, board: Tile[], pieceColor: string) => {
   const moves = []
   for (let i = 1; i < 8; i++) {
     if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col + i, board)) {
-      moves.push({ row: piece.row + i, col: piece.col + i, userColor: userColor })
+      moves.push({ row: piece.row + i, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col - i, board)) {
-      moves.push({ row: piece.row - i, col: piece.col - i, userColor: userColor })
+      moves.push({ row: piece.row - i, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col - i, board)) {
-      moves.push({ row: piece.row + i, col: piece.col - i, userColor: userColor })
+      moves.push({ row: piece.row + i, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 8; i++) {
     if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col + i, board)) {
-      moves.push({ row: piece.row - i, col: piece.col + i, userColor: userColor })
+      moves.push({ row: piece.row - i, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   return moves
 }
 
-const getKnightMoves = (piece: Piece, board: Tile[], userColor: string) => {
+const getKnightMoves = (piece: Piece, board: Tile[], pieceColor: string) => {
   const moves = []
-  moves.push({ row: piece.row + 2, col: piece.col + 1, userColor: userColor })
-  moves.push({ row: piece.row + 2, col: piece.col - 1, userColor: userColor })
-  moves.push({ row: piece.row - 2, col: piece.col + 1, userColor: userColor })
-  moves.push({ row: piece.row - 2, col: piece.col - 1, userColor: userColor })
-  moves.push({ row: piece.row - 1, col: piece.col - 2, userColor: userColor })
-  moves.push({ row: piece.row - 1, col: piece.col + 2, userColor: userColor })
-  moves.push({ row: piece.row + 1, col: piece.col + 2, userColor: userColor })
-  moves.push({ row: piece.row + 1, col: piece.col - 2, userColor: userColor })
+  moves.push({ row: piece.row + 2, col: piece.col + 1, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row + 2, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row - 2, col: piece.col + 1, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row - 2, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row - 1, col: piece.col - 2, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row - 1, col: piece.col + 2, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row + 1, col: piece.col + 2, pieceColor: pieceColor, attackMove: true })
+  moves.push({ row: piece.row + 1, col: piece.col - 2, pieceColor: pieceColor, attackMove: true })
 
   return moves
 }
 
-const getKingMoves = (piece: Piece, board: any, userColor: string) => {
+const getKingMoves = (piece: Piece, board: any, pieceColor: string) => {
   const moves = []
   for (let i = 1; i < 2; i++) {
-    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col + i, board) && !moveExistsInOppositeColor(piece.row + i, piece.col + i, userColor)) {
-      moves.push({ row: piece.row + i, col: piece.col + i, userColor: userColor })
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col + i, board) && !attackMoveExistsInOppositeColor(piece.row + i, piece.col + i, pieceColor)) {
+      moves.push({ row: piece.row + i, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col - i, board) && !moveExistsInOppositeColor(piece.row - i, piece.col - i, userColor)) {
-      moves.push({ row: piece.row - i, col: piece.col - i, userColor: userColor })
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col - i, board) && !attackMoveExistsInOppositeColor(piece.row - i, piece.col - i, pieceColor)) {
+      moves.push({ row: piece.row - i, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col - i, board) && !moveExistsInOppositeColor(piece.row + i, piece.col - i, userColor)) {
-      moves.push({ row: piece.row + i, col: piece.col - i, userColor: userColor })
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col - i, board) && !attackMoveExistsInOppositeColor(piece.row + i, piece.col - i, pieceColor)) {
+      moves.push({ row: piece.row + i, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col + i, board) && !moveExistsInOppositeColor(piece.row - i, piece.col + i, userColor)) {
-      moves.push({ row: piece.row - i, col: piece.col + i, userColor: userColor })
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col + i, board) && !attackMoveExistsInOppositeColor(piece.row - i, piece.col + i, pieceColor)) {
+      moves.push({ row: piece.row - i, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col, board) && !moveExistsInOppositeColor(piece.row + i, piece.col, userColor)) {
-      moves.push({ row: piece.row + i, col: piece.col, userColor: userColor })
+    if (piece.row + i < 8 && existsNoPieceOnTile(piece.row + i, piece.col, board) && !attackMoveExistsInOppositeColor(piece.row + i, piece.col, pieceColor)) {
+      moves.push({ row: piece.row + i, col: piece.col, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col, board) && !moveExistsInOppositeColor(piece.row - i, piece.col, userColor)) {
-      moves.push({ row: piece.row - i, col: piece.col, userColor: userColor })
+    if (piece.row - i >= 0 && existsNoPieceOnTile(piece.row - i, piece.col, board) && !attackMoveExistsInOppositeColor(piece.row - i, piece.col, pieceColor)) {
+      moves.push({ row: piece.row - i, col: piece.col, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.col - i >= 0 && existsNoPieceOnTile(piece.row, piece.col - i, board) && !moveExistsInOppositeColor(piece.row, piece.col - i, userColor)) {
-      moves.push({ row: piece.row, col: piece.col - i, userColor: userColor })
+    if (piece.col - i >= 0 && existsNoPieceOnTile(piece.row, piece.col - i, board) && !attackMoveExistsInOppositeColor(piece.row, piece.col - i, pieceColor)) {
+      moves.push({ row: piece.row, col: piece.col - i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
   for (let i = 1; i < 2; i++) {
-    if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board) && !moveExistsInOppositeColor(piece.row, piece.col + i, userColor)) {
-      moves.push({ row: piece.row, col: piece.col + i, userColor: userColor })
+    if (piece.col + i < 8 && existsNoPieceOnTile(piece.row, piece.col + i, board) && !attackMoveExistsInOppositeColor(piece.row, piece.col + i, pieceColor)) {
+      moves.push({ row: piece.row, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
-
-
   return moves
 }
 
