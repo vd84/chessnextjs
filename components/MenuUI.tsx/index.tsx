@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 const MenuUI = ({ onClickPlay }) => {
-    console.log(onClickPlay)
     return (
         <>
             <div className='menu-div'>

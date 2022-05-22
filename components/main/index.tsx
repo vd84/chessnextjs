@@ -122,14 +122,9 @@ const MainComp = () => {
     const startTime = performance.now()
     calculateMoves()
     const endTime = performance.now()
-    console.log(`Call to calculatemoves took ${endTime - startTime} milliseconds`)
   }, [chosenPiece])
 
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
-    const allMoves = getAllOpponentsPossibleMoves(board, userColor)
-    if (allMoves.find(x => x.col === col && x.row === row)) {
-      alert("HÄR KAN DU INTE GÅ FÖR HÄR SIKTAR EN ANNN")
-    }
     sendMove(piece.id + "," + tileId)
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
@@ -143,7 +138,6 @@ const MainComp = () => {
   }, [board])
 
   const onClickTile = useCallback((tileId, row, col) => {
-    console.log(board[tileId])
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
@@ -156,6 +150,7 @@ const MainComp = () => {
         }
         setChosenPiece(board[i].piece)
         foundPiece = true
+        console.log(board[i].piece?.moves)
       }
     }
     if (!foundPiece && chosenPiece) {
@@ -163,11 +158,6 @@ const MainComp = () => {
       movePiece(chosenPiece, tileId, col, row)
     }
   }, [piecePositions, chosenPiece, board])
-
-  useEffect(() => {
-    console.log(moves)
-    setCoolMoves(moves)
-  }, [moves])
 
   return (
     <div className='parent-container'>
