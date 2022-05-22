@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 
-import getMoves from '../../utils/calculateMoves'
+import getMoves, { getAllOpponentsPossibleMoves } from '../../utils/calculateMoves'
 import { sendMove, moves } from '../../utils/connect'
 
 import bd from '../../public/pieces/bd.svg'
@@ -85,7 +85,6 @@ const MainComp = () => {
     {
       7: whiteForwards,
       6: whitePawns,
-
       1: blackPawns,
       0: blackForwards
     }
@@ -127,6 +126,10 @@ const MainComp = () => {
   }, [chosenPiece])
 
   const movePiece = useCallback((piece: Piece, tileId: number, col: any, row: any) => {
+    const allMoves = getAllOpponentsPossibleMoves(board, userColor)
+    if (allMoves.find(x => x.col === col && x.row === row)) {
+      alert("HÄR KAN DU INTE GÅ FÖR HÄR SIKTAR EN ANNN")
+    }
     sendMove(piece.id + "," + tileId)
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
@@ -145,7 +148,7 @@ const MainComp = () => {
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
         if (!board[i].piece) continue
-        if (!chosenPiece && board[i].piece?.color !== userColor) return
+        // if (!chosenPiece && board[i].piece?.color !== userColor) return
         if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
           if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
           movePiece(chosenPiece, tileId, col, row)
