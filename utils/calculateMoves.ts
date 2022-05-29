@@ -63,12 +63,10 @@ const getPawnMoves = (piece: Piece, board: Tile[], userColor: string, pieceColor
   if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id - 1].piece?.color !== userColor && board[piece.id + 1].piece?.amountMoves === 1) {
     moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: false })
   }
-  if (getPieceOnTile(piece.row - 1 * m, piece.col - 1, board)) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
-  }
-  if (getPieceOnTile(piece.row - 1 * m, piece.col + 1, board)) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: true })
-  }
+  moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
+
+  moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: true })
+
   return moves
 }
 
