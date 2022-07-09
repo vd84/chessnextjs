@@ -1,6 +1,6 @@
 import { Piece, Tile } from '../components/main'
 
-const allPossibleMoves: { col: number, row: number, pieceColor: string, attackMove: boolean }[] = []
+const allPossibleMoves: { col: number, row: number, pieceColor: string, attackMove: boolean, castleMove?: boolean }[] = []
 
 const existsNoPieceOnTile = (row: number, col: number, board: Tile[]) => {
   return getPieceOnTile(row, col, board) === undefined
@@ -11,16 +11,16 @@ const getPieceOnTile = (row: number, col: number, board: Tile[]) => {
 }
 
 const attackMoveExistsInOppositeColor = (row: number, col: number, userColor: string) => {
-  console.log(allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove === true))
-  return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove === true) >= 0
+  console.log(allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove))
+  return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove) >= 0
 }
 
-const getMoves = (piece: Piece, board: any, userColor: string) => {
+const getMoves = (piece: Piece, board: Tile[], userColor: string) => {
   switch (piece.pieceType) {
     case 'pawn':
       const pawnMoves = getPawnMoves(piece, board, userColor, piece.color)
       allPossibleMoves.push(...pawnMoves)
-      return pawnMoves;
+      return pawnMoves
     case 'rook':
       const rookMoves = getRookMoves(piece, board, piece.color)
       allPossibleMoves.push(...rookMoves)
@@ -28,19 +28,19 @@ const getMoves = (piece: Piece, board: any, userColor: string) => {
     case 'bishop':
       const bishopMoves = getBishopMoves(piece, board, piece.color)
       allPossibleMoves.push(...bishopMoves)
-      return bishopMoves;
+      return bishopMoves
     case 'king':
       const kingMoves = getKingMoves(piece, board, piece.color)
       allPossibleMoves.push(...kingMoves)
-      return kingMoves;
+      return kingMoves
     case 'knight':
       const knightMoves = getKnightMoves(piece, board, piece.color)
       allPossibleMoves.push(...knightMoves)
-      return knightMoves;
+      return knightMoves
     case 'queen':
       const queenMoves = [...getBishopMoves(piece, board, piece.color), ...getRookMoves(piece, board, userColor)]
       allPossibleMoves.push(...queenMoves)
-      return queenMoves;
+      return queenMoves
     default:
       return []
     // code block
@@ -176,10 +176,16 @@ const getKingMoves = (piece: Piece, board: any, pieceColor: string) => {
       moves.push({ row: piece.row, col: piece.col + i, pieceColor: pieceColor, attackMove: true })
     } else break
   }
+  if (kingCanCastle(piece)) {
+    moves.push({ row: piece.row, col: piece.col - 2, pieceColor: pieceColor, attackMove: true, castleMove: true })
+    moves.push({ row: piece.row, col: piece.col + 2, pieceColor: pieceColor, attackMove: true, castleMove: true })
+  }
   return moves
 }
 
-
+const kingCanCastle = (king: Piece) => {
+  return king.amountMoves <= 0
+}
 
 const kingIsChecked = (piece: Piece) => {
   return piece.pieceType === 'king' && piece.moves.length <= 0
