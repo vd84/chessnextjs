@@ -137,15 +137,12 @@ const MainComp = () => {
       pieceId -= 56
       pieceIdDestination -= 56
     }
-
     const boardCopy = [...board]
     const rookTile = boardCopy[pieceId]
     const rook: Piece = rookTile.piece
     console.log(rook)
     if (rookTile) {
       const col = direction === 'left' ? 3 : 5
-      const row = userColor === 'white' ? 7 : 0
-      await movePiece(rook, pieceIdDestination, col, row)
       console.log(rook)
       rookTile.col = col
       rook.col = col
@@ -159,6 +156,7 @@ const MainComp = () => {
   }, [board, userColor])
 
   const movePiece = useCallback(async (piece: Piece, tileId: number, col: any, row: any) => {
+    console.log('HELLOW')
     await sendMove(piece.id + ',' + tileId)
     const boardCopy = [...board]
     boardCopy[piece.id].piece = undefined
@@ -192,12 +190,12 @@ const MainComp = () => {
       const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
       console.log(chosenMove)
       if (chosenMove?.castleMove && chosenMove?.col < chosenPiece.col) {
-        console.log('hejsan')
         await castleRook('left')
+        await movePiece(chosenPiece, tileId, col, row)
       }
       if (chosenMove?.castleMove && chosenMove?.col > chosenPiece.col) {
-        console.log('hejsan')
         await castleRook('right')
+        await movePiece(chosenPiece, tileId, col, row)
       }
       if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
       await movePiece(chosenPiece, tileId, col, row)

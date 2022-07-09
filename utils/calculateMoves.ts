@@ -15,6 +15,21 @@ const attackMoveExistsInOppositeColor = (row: number, col: number, userColor: st
   return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove) >= 0
 }
 
+const existsPieceInTheWayCol = (board: Tile[], row: number, currentCol: number, destCol: number) => {
+  while (currentCol !== destCol) {
+    if (getPieceOnTile(row, currentCol, board)) {
+      console.log('found piece in the way ' + currentCol)
+      return true
+    }
+    if (currentCol < destCol) {
+      currentCol++
+    } else {
+      currentCol--
+    }
+  }
+  return false
+}
+
 const getMoves = (piece: Piece, board: Tile[], userColor: string) => {
   switch (piece.pieceType) {
     case 'pawn':
@@ -177,8 +192,8 @@ const getKingMoves = (piece: Piece, board: any, pieceColor: string) => {
     } else break
   }
   if (kingCanCastle(piece)) {
-    moves.push({ row: piece.row, col: piece.col - 2, pieceColor: pieceColor, attackMove: true, castleMove: true })
-    moves.push({ row: piece.row, col: piece.col + 2, pieceColor: pieceColor, attackMove: true, castleMove: true })
+    if (!existsPieceInTheWayCol(board, piece.row, piece.col + 1, piece.col + 2)) { moves.push({ row: piece.row, col: piece.col + 2, pieceColor: pieceColor, attackMove: true, castleMove: true }) }
+    if (!existsPieceInTheWayCol(board, piece.row, piece.col - 1, piece.col - 2))moves.push({ row: piece.row, col: piece.col - 2, pieceColor: pieceColor, attackMove: true, castleMove: true })
   }
   return moves
 }
