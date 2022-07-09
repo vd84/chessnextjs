@@ -87,7 +87,7 @@ const whiteForwards =
 const MainComp = () => {
   const [board, setBoard] = useState<Tile[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
-  const [userColor, setUserColor] = useState('white')
+  const [userColor, setUserColor] = useState('black')
   const [coolMoves, setCoolMoves] = useState()
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
     {
@@ -131,16 +131,21 @@ const MainComp = () => {
   }, [chosenPiece])
 
   const castleRook = useCallback(async (direction: 'left' | 'right') => {
-    const pieceId = direction === 'left' ? 56 : 63
+    let pieceId = direction === 'left' ? 56 : 63
+    let pieceIdDestination = direction === 'left' ? 59 : 61
+    if (userColor === 'black') {
+      pieceId -= 56
+      pieceIdDestination -= 56
+    }
 
     const boardCopy = [...board]
     const rookTile = boardCopy[pieceId]
     const rook: Piece = rookTile.piece
+    console.log(rook)
     if (rookTile) {
       const col = direction === 'left' ? 3 : 5
-      const pieceId = direction === 'left' ? 56 : 63
-      const pieceIdDestination = direction === 'left' ? 59 : 61
-      await movePiece(rook, pieceIdDestination, col, 7)
+      const row = userColor === 'white' ? 7 : 0
+      await movePiece(rook, pieceIdDestination, col, row)
       console.log(rook)
       rookTile.col = col
       rook.col = col
@@ -151,7 +156,7 @@ const MainComp = () => {
       calculateMoves()
     }
     console.log(board)
-  }, [board])
+  }, [board, userColor])
 
   const movePiece = useCallback(async (piece: Piece, tileId: number, col: any, row: any) => {
     await sendMove(piece.id + ',' + tileId)
