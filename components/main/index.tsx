@@ -128,6 +128,7 @@ const MainComp = () => {
 
   useEffect(() => {
     calculateMoves()
+    console.log(board)
   }, [chosenPiece])
 
   const castleRook = useCallback(async (direction: 'left' | 'right') => {
@@ -137,39 +138,36 @@ const MainComp = () => {
       pieceId -= 56
       pieceIdDestination -= 56
     }
-    const boardCopy = [...board]
-    const rookTile = boardCopy[pieceId]
-    const rook: Piece = rookTile.piece
+    console.log(pieceId)
+    const rook = board[pieceId]
     console.log(rook)
-    if (rookTile) {
+    const row = userColor === 'white' ? 7 : 0
+    if (rook.piece) {
       const col = direction === 'left' ? 3 : 5
-      console.log(rook)
-      rookTile.col = col
-      rook.col = col
-      rook.id = pieceIdDestination
-      boardCopy[pieceId].piece = undefined
-      boardCopy[pieceIdDestination].piece = rook
-      setBoard(boardCopy)
-      calculateMoves()
+      await movePiece(rook.piece, pieceIdDestination, col, row)
     }
-    console.log(board)
   }, [board, userColor])
 
   const movePiece = useCallback(async (piece: Piece, tileId: number, col: any, row: any) => {
-    console.log('HELLOW')
-    await sendMove(piece.id + ',' + tileId)
+    // await sendMove(piece.id + ',' + tileId)
     const boardCopy = [...board]
+    const pieceCopy = { ...piece }
+    console.log(pieceCopy)
     boardCopy[piece.id].piece = undefined
-    piece.id = tileId
-    piece.col = col
-    piece.row = row
-    piece.amountMoves++
-    boardCopy[tileId].piece = chosenPiece
+    pieceCopy.id = tileId
+    pieceCopy.col = col
+    pieceCopy.row = row
+    pieceCopy.amountMoves++
+    boardCopy[tileId].piece = pieceCopy
     setBoard(boardCopy)
     setChosenPiece(undefined)
+    piece.amountMoves++
+    console.log(pieceCopy)
   }, [board])
 
   const onClickTile = useCallback(async (tileId, row, col) => {
+    console.log('Clicking on tile')
+    calculateMoves()
     let foundPiece = false
     for (let i = 0; i < 64; i++) {
       if (board[i].id === tileId) {
@@ -181,23 +179,25 @@ const MainComp = () => {
           await movePiece(chosenPiece, tileId, col, row)
           return
         }
+
         setChosenPiece(board[i].piece)
         foundPiece = true
-        console.log(board[i].piece?.moves)
       }
     }
     if (!foundPiece && chosenPiece) {
       const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
-      console.log(chosenMove)
       if (chosenMove?.castleMove && chosenMove?.col < chosenPiece.col) {
         await castleRook('left')
+        console.log(chosenPiece)
         await movePiece(chosenPiece, tileId, col, row)
       }
       if (chosenMove?.castleMove && chosenMove?.col > chosenPiece.col) {
         await castleRook('right')
+        console.log(chosenPiece)
+
         await movePiece(chosenPiece, tileId, col, row)
       }
-      if (!chosenPiece.moves.find(x => x.col === col && x.row === row)) return
+      if (!chosenMove) return
       await movePiece(chosenPiece, tileId, col, row)
     }
   }, [piecePositions, chosenPiece, board])

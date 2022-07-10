@@ -11,14 +11,12 @@ const getPieceOnTile = (row: number, col: number, board: Tile[]) => {
 }
 
 const attackMoveExistsInOppositeColor = (row: number, col: number, userColor: string) => {
-  console.log(allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove))
   return allPossibleMoves.findIndex(x => x.col === col && x.row === row && x.pieceColor !== userColor && x.attackMove) >= 0
 }
 
 const existsPieceInTheWayCol = (board: Tile[], row: number, currentCol: number, destCol: number) => {
   while (currentCol !== destCol) {
     if (getPieceOnTile(row, currentCol, board)) {
-      console.log('found piece in the way ' + currentCol)
       return true
     }
     if (currentCol < destCol) {
