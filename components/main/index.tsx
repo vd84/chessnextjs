@@ -169,21 +169,22 @@ const MainComp = () => {
     console.log('Clicking on tile')
     calculateMoves()
     let foundPiece = false
-    for (let i = 0; i < 64; i++) {
-      if (board[i].id === tileId) {
-        if (!board[i].piece) continue
-        // if (!chosenPiece && board[i].piece?.color !== userColor) return
-        if (chosenPiece && chosenPiece.color !== board[i].piece?.color) {
-          const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
-          if (!chosenMove) return
-          await movePiece(chosenPiece, tileId, col, row)
-          return
-        }
-
-        setChosenPiece(board[i].piece)
-        foundPiece = true
+    const tileClicked = board[tileId]
+    console.log(tileClicked)
+    if (tileClicked.id === tileId) {
+      // if (!chosenPiece && board[i].piece?.color !== userColor) return
+      if (chosenPiece && chosenPiece.color !== tileClicked.piece?.color) {
+        const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
+        if (!chosenMove) return
+        if (chosenMove.attackMove && !tileClicked.piece) return
+        await movePiece(chosenPiece, tileId, col, row)
+        return
       }
+
+      setChosenPiece(tileClicked.piece)
+      foundPiece = true
     }
+
     if (!foundPiece && chosenPiece) {
       const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
       if (chosenMove?.castleMove && chosenMove?.col < chosenPiece.col) {
