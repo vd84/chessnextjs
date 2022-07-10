@@ -23,6 +23,7 @@ export type Move = {
     pieceColor: string,
     attackMove: boolean,
     castleMove?: boolean
+    enPassantMove?: boolean
 }
 
 export type Piece = {
@@ -87,7 +88,7 @@ const whiteForwards =
 const MainComp = () => {
   const [board, setBoard] = useState<Tile[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
-  const [userColor, setUserColor] = useState('black')
+  const [userColor, setUserColor] = useState('white')
   const [coolMoves, setCoolMoves] = useState()
   const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
     {
@@ -148,6 +149,12 @@ const MainComp = () => {
     }
   }, [board, userColor])
 
+  const removePiece = useCallback((pieceId: number) => {
+    const boardCopy = [...board]
+    boardCopy[pieceId].piece = undefined
+    setBoard(boardCopy)
+  }, [board])
+
   const movePiece = useCallback(async (piece: Piece, tileId: number, col: any, row: any) => {
     // await sendMove(piece.id + ',' + tileId)
     const boardCopy = [...board]
@@ -177,10 +184,13 @@ const MainComp = () => {
         const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
         if (!chosenMove) return
         if (chosenMove.attackMove && !tileClicked.piece) return
+        if (chosenMove.enPassantMove) {
+          const pawnToRemoveId = userColor === 'white' ? tileId + 8 : tileId - 8
+          removePiece(pawnToRemoveId)
+        }
         await movePiece(chosenPiece, tileId, col, row)
         return
       }
-
       setChosenPiece(tileClicked.piece)
       foundPiece = true
     }

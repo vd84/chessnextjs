@@ -1,4 +1,4 @@
-import { Piece, Tile } from '../components/main'
+import { Move, Piece, Tile } from '../components/main'
 
 const allPossibleMoves: { col: number, row: number, pieceColor: string, attackMove: boolean, castleMove?: boolean }[] = []
 
@@ -63,7 +63,7 @@ const getMoves = (piece: Piece, board: Tile[], userColor: string) => {
 const getPawnMoves = (piece: Piece, board: Tile[], userColor: string, pieceColor: string) => {
   const m = piece.color === 'white' ? 1 : -1
 
-  const moves: { col: number, row: number, pieceColor: string, attackMove: boolean }[] = []
+  const moves: Move[] = []
   if (existsNoPieceOnTile(piece.row - 1 * m, piece.col, board)) {
     moves.push({ row: piece.row - 1 * m, col: piece.col, pieceColor: pieceColor, attackMove: false })
   }
@@ -71,10 +71,10 @@ const getPawnMoves = (piece: Piece, board: Tile[], userColor: string, pieceColor
     moves.push({ row: piece.row - 2 * m, col: piece.col, pieceColor: pieceColor, attackMove: false })
   }
   if (board[piece.id + 1].piece?.pieceType === 'pawn' && board[piece.id + 1].piece?.color !== userColor && board[piece.id + 1].piece?.amountMoves === 1) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: false })
+    moves.push({ row: piece.row - 1 * m, col: piece.col + 1, pieceColor: pieceColor, attackMove: false, enPassantMove: true })
   }
-  if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id - 1].piece?.color !== userColor && board[piece.id + 1].piece?.amountMoves === 1) {
-    moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: false })
+  if (board[piece.id - 1].piece?.pieceType === 'pawn' && board[piece.id - 1].piece?.color !== userColor && board[piece.id - 1].piece?.amountMoves === 1) {
+    moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: false, enPassantMove: true })
   }
   moves.push({ row: piece.row - 1 * m, col: piece.col - 1, pieceColor: pieceColor, attackMove: true })
 
