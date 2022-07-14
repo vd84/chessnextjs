@@ -4,26 +4,26 @@ import MainComp from '../main'
 import MenuUI from '../MenuUI.tsx'
 
 const Menu = () => {
-    const [loadingGame, setLoadingGame] = useState(false)
-    const [playing, setPlaying] = useState(false)
+  const [loadingGame, setLoadingGame] = useState(false)
+  const [playing, setPlaying] = useState(false)
 
-    const onHandlePlayClick = useCallback(async () => {
-        setLoadingGame(true)
-        const sessionId = await getSessionId()
-        localStorage.setItem('sessionId', sessionId)
-        initWs()
-        setTimeout(() => {
-            setPlaying(true)
-        }, 3000)
-    }, [])
+  const onHandlePlayClick = useCallback(async () => {
+    setLoadingGame(true)
+    const sessionId = await getSessionId()
+    localStorage.setItem('sessionId', sessionId)
+    await initWs()
+    setTimeout(() => {
+      setPlaying(true)
+    }, 3000)
+  }, [])
 
-    return (
+  return (
         <div className='container'>
             {playing
-                ? <MainComp />
-                : loadingGame
-                    ? <div className="loader">Loading<span className="loader__dot">.</span><span className="loader__dot">.</span><span className="loader__dot">.</span></div>
-                    : <MenuUI onClickPlay={onHandlePlayClick} />
+              ? <MainComp />
+              : loadingGame
+                ? <div className="loader">Loading<span className="loader__dot">.</span><span className="loader__dot">.</span><span className="loader__dot">.</span></div>
+                : <MenuUI onClickPlay={onHandlePlayClick} />
             }
             <style jsx>
                 {`
@@ -40,7 +40,7 @@ const Menu = () => {
                 `}
             </style>
         </div >
-    )
+  )
 }
 
 export default Menu
