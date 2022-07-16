@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 
-import getMoves from '../../utils/calculateMoves'
+import getMoves, { kingIsChecked } from '../../utils/calculateMoves'
 import { whiteForwards, blackForwards, blackPawns, whitePawns } from '../../utils/pieces'
 import { Piece, Tile } from '../types'
 
@@ -50,6 +50,16 @@ const MainComp = () => {
     calculateMoves()
   }, [chosenPiece])
 
+  useEffect(() => {
+    const king = board.find(x => x.piece?.pieceType === 'king' && x.piece.color === userColor)?.piece
+    const queen = board.find(x => x.piece?.pieceType === 'queen' && x.piece.color === 'black')?.piece
+    console.log(queen)
+    if (king && kingIsChecked(king, board, userColor)) {
+      console.log('king is checked')
+    }
+    console.log(king)
+  }, [board])
+
   const castleRook = useCallback(async (direction: 'left' | 'right') => {
     let pieceId = direction === 'left' ? 56 : 63
     let pieceIdDestination = direction === 'left' ? 59 : 61
@@ -95,7 +105,7 @@ const MainComp = () => {
       if (chosenPiece && chosenPiece.color !== tileClicked.piece?.color && !chosenMove?.castleMove) {
         const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
         if (!chosenMove) return
-        if (chosenMove.attackMove && !tileClicked.piece) return
+        if ((chosenMove.attackMove && chosenPiece.pieceType === 'pawn') && !tileClicked.piece) return
         if (chosenMove.enPassantMove) {
           const pawnToRemoveId = userColor === 'white' ? tileId + 8 : tileId - 8
           removePiece(pawnToRemoveId)

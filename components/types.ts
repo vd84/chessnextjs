@@ -2,7 +2,7 @@ export type Move = {
     col: number,
     row: number,
     pieceColor: string,
-    attackMove: boolean,
+    attackMove?: boolean,
     castleMove?: boolean
     enPassantMove?: boolean
 }
