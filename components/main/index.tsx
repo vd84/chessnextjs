@@ -1,17 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 
-import getMoves, { getAllOpponentsPossibleMoves } from '../../utils/calculateMoves'
-import { sendMove, moves } from '../../utils/connect'
+import getMoves from '../../utils/calculateMoves'
 import { whiteForwards, blackForwards, blackPawns, whitePawns } from '../../utils/pieces'
 import { Piece, Tile } from '../types'
 
 const MainComp = () => {
   const [board, setBoard] = useState<Tile[]>([])
   const [chosenPiece, setChosenPiece] = useState<Piece>()
-  const [userColor, setUserColor] = useState('white')
-  const [coolMoves, setCoolMoves] = useState()
-  const [piecePositions, setPiecePositions] = useState<{ [key: number]: Piece[] }>(
+  const [userColor] = useState('white')
+  const [piecePositions] = useState<{ [key: number]: Piece[] }>(
     {
       7: whiteForwards,
       6: whitePawns,
@@ -98,6 +96,7 @@ const MainComp = () => {
     calculateMoves()
     let foundPiece = false
     const tileClicked = board[tileId]
+    console.log(tileId)
     console.log(tileClicked)
     if (tileClicked.id === tileId) {
       // if (!chosenPiece && board[i].piece?.color !== userColor) return
@@ -136,9 +135,6 @@ const MainComp = () => {
 
   return (
     <div className='parent-container'>
-      {
-        coolMoves && coolMoves.map((m, idx) => <p key={idx}>{m}</p>)
-      }
       <div className={'container ' + (userColor === 'black' ? 'rotate-180' : '')}>
         <div className="board-wrapper place-items-center" >
           {
