@@ -48,7 +48,6 @@ const MainComp = () => {
 
   useEffect(() => {
     calculateMoves()
-    console.log(board)
   }, [chosenPiece])
 
   const castleRook = useCallback(async (direction: 'left' | 'right') => {
@@ -58,9 +57,7 @@ const MainComp = () => {
       pieceId -= 56
       pieceIdDestination -= 56
     }
-    console.log(pieceId)
     const rook = board[pieceId]
-    console.log(rook)
     const row = userColor === 'white' ? 7 : 0
     if (rook.piece) {
       const col = direction === 'left' ? 3 : 5
@@ -78,7 +75,6 @@ const MainComp = () => {
     // await sendMove(piece.id + ',' + tileId)
     const boardCopy = [...board]
     const pieceCopy = { ...piece }
-    console.log(pieceCopy)
     boardCopy[piece.id].piece = undefined
     pieceCopy.id = tileId
     pieceCopy.col = col
@@ -88,19 +84,15 @@ const MainComp = () => {
     setBoard(boardCopy)
     setChosenPiece(undefined)
     piece.amountMoves++
-    console.log(pieceCopy)
   }, [board])
 
   const onClickTile = useCallback(async (tileId, row, col) => {
-    console.log('Clicking on tile')
     calculateMoves()
-    let foundPiece = false
     const tileClicked = board[tileId]
-    console.log(tileId)
-    console.log(tileClicked)
+    const chosenMove = chosenPiece?.moves.find(x => x.col === col && x.row === row)
     if (tileClicked.id === tileId) {
       // if (!chosenPiece && board[i].piece?.color !== userColor) return
-      if (chosenPiece && chosenPiece.color !== tileClicked.piece?.color) {
+      if (chosenPiece && chosenPiece.color !== tileClicked.piece?.color && !chosenMove?.castleMove) {
         const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
         if (!chosenMove) return
         if (chosenMove.attackMove && !tileClicked.piece) return
@@ -112,19 +104,15 @@ const MainComp = () => {
         return
       }
       setChosenPiece(tileClicked.piece)
-      foundPiece = true
     }
 
-    if (!foundPiece && chosenPiece) {
-      const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
+    if (!tileClicked.piece && chosenPiece) {
       if (chosenMove?.castleMove && chosenMove?.col < chosenPiece.col) {
         await castleRook('left')
-        console.log(chosenPiece)
         await movePiece(chosenPiece, tileId, col, row)
       }
       if (chosenMove?.castleMove && chosenMove?.col > chosenPiece.col) {
         await castleRook('right')
-        console.log(chosenPiece)
 
         await movePiece(chosenPiece, tileId, col, row)
       }
