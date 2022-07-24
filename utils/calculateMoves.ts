@@ -46,7 +46,7 @@ const getMoves = (tile: Tile, board: Tile[], userColor: string) => {
     case 'knight':
       return getKnightMoves(tile, board, tile?.piece.color)
     case 'queen':
-      return [...getBishopMoves(tile, board, tile?.piece.color), ...getRookMoves(tile?.piece, board, userColor)]
+      return [...getBishopMoves(tile, board, tile?.piece.color), ...getRookMoves(tile, board, userColor)]
     default:
       return []
     // code block
@@ -227,9 +227,7 @@ const kingCanCastle = (king: Piece) => {
   return king.amountMoves <= 0
 }
 
-export const kingIsChecked = (tile: Tile, board: Tile[], userColor: string) => {
-  if (!tile.piece) return
-
+export const kingIsChecked = (piece: Piece, board: Tile[], userColor: string) => {
   const allOpponentTiles = board.filter((tile: Tile) => {
     return tile.piece && tile.piece?.color !== userColor
   })
@@ -239,8 +237,7 @@ export const kingIsChecked = (tile: Tile, board: Tile[], userColor: string) => {
     if (allOpponentTiles[i].piece?.moves) { allOpponentMoves.push(...allOpponentTiles[i].piece?.moves!) }
   }
 
-  const isChecked = allOpponentMoves.findIndex(x => x?.col === tile.piece?.col && x.row === tile.piece?.row) >= 0
-  console.log(isChecked)
+  const isChecked = allOpponentMoves.findIndex(x => x?.col === piece?.col && x.row === piece?.row) >= 0
   return isChecked
 }
 
