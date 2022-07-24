@@ -4,11 +4,13 @@ import Image from 'next/image'
 import getMoves, { kingIsChecked } from '../../utils/calculateMoves'
 import { whiteForwards, blackForwards, blackPawns, whitePawns } from '../../utils/pieces'
 import { Piece, Tile } from '../types'
+import { castleRook } from '../../utils/castleRook'
 
 const MainComp = () => {
   const [board, setBoard] = useState<Tile[]>([])
-  const [chosenPiece, setChosenPiece] = useState<Piece>()
-  const [userColor] = useState('white')
+  const [chosenTile, setChosenTile] = useState<Tile>()
+  const [userColor] = useState('black')
+  const [userChecked, setIsUserChecked] = useState(false)
   const [piecePositions] = useState<{ [key: number]: Piece[] }>(
     {
       7: whiteForwards,
@@ -18,7 +20,7 @@ const MainComp = () => {
     }
   )
 
-  useEffect(() => {
+  const initBoard = useCallback(() => {
     const tempBoard: any[] = []
     let id = 0
     for (let i = 0; i < 8; i++) {
@@ -34,13 +36,17 @@ const MainComp = () => {
       }
     }
     setBoard(tempBoard)
-  }, [])
+  }, [setBoard])
+
+  useEffect(() => {
+    initBoard()
+  }, [initBoard])
 
   const calculateMoves = useCallback(() => {
     for (let i = 0; i < board.length; i++) {
       if (board[i].piece) {
         const boardCopy = [...board]
-        boardCopy[i].piece?.moves = getMoves(board[i].piece, board, userColor)
+        boardCopy[i].piece?.moves = getMoves(board[i], board, userColor)
         setBoard(boardCopy)
       }
     }
@@ -48,88 +54,75 @@ const MainComp = () => {
 
   useEffect(() => {
     calculateMoves()
-  }, [chosenPiece])
+  }, [chosenTile])
 
-  useEffect(() => {
+  const checkIsKingChecked = useCallback(() => {
     const king = board.find(x => x.piece?.pieceType === 'king' && x.piece.color === userColor)?.piece
-    const queen = board.find(x => x.piece?.pieceType === 'queen' && x.piece.color === 'black')?.piece
-    console.log(queen)
     if (king && kingIsChecked(king, board, userColor)) {
-      console.log('king is checked')
+      setIsUserChecked(true)
+    } else {
+      setIsUserChecked(false)
     }
-    console.log(king)
-  }, [board])
+  }, [userChecked])
 
-  const castleRook = useCallback(async (direction: 'left' | 'right') => {
-    let pieceId = direction === 'left' ? 56 : 63
-    let pieceIdDestination = direction === 'left' ? 59 : 61
-    if (userColor === 'black') {
-      pieceId -= 56
-      pieceIdDestination -= 56
-    }
-    const rook = board[pieceId]
-    const row = userColor === 'white' ? 7 : 0
-    if (rook.piece) {
-      const col = direction === 'left' ? 3 : 5
-      await movePiece(rook.piece, pieceIdDestination, col, row)
-    }
-  }, [board, userColor])
-
-  const removePiece = useCallback((pieceId: number) => {
-    const boardCopy = [...board]
-    boardCopy[pieceId].piece = undefined
-    setBoard(boardCopy)
-  }, [board])
-
-  const movePiece = useCallback(async (piece: Piece, tileId: number, col: any, row: any) => {
-    // await sendMove(piece.id + ',' + tileId)
+  const setPieceOnTile = useCallback(async (piece: Piece | undefined, tileId: number, col: any, row: any) => {
+    console.log(tileId)
+    if (!piece) return
     const boardCopy = [...board]
     const pieceCopy = { ...piece }
-    boardCopy[piece.id].piece = undefined
-    pieceCopy.id = tileId
     pieceCopy.col = col
     pieceCopy.row = row
     pieceCopy.amountMoves++
     boardCopy[tileId].piece = pieceCopy
+    console.log(boardCopy[chosenTile.id].piece)
     setBoard(boardCopy)
-    setChosenPiece(undefined)
-    piece.amountMoves++
+  }, [chosenTile, board])
+
+  const unSetPieceOnTile = useCallback(async (tileId: number) => {
+    console.log(tileId)
+    const boardCopy = [...board]
+    boardCopy[tileId].piece = undefined
+    setBoard(boardCopy)
   }, [board])
 
   const onClickTile = useCallback(async (tileId, row, col) => {
-    calculateMoves()
+    console.log(board[tileId])
     const tileClicked = board[tileId]
-    const chosenMove = chosenPiece?.moves.find(x => x.col === col && x.row === row)
+    const chosenMove = chosenTile?.piece?.moves.find(x => x.col === col && x.row === row)
     if (tileClicked.id === tileId) {
       // if (!chosenPiece && board[i].piece?.color !== userColor) return
-      if (chosenPiece && chosenPiece.color !== tileClicked.piece?.color && !chosenMove?.castleMove) {
-        const chosenMove = chosenPiece.moves.find(x => x.col === col && x.row === row)
+      if (chosenTile?.piece && chosenTile?.piece.color !== tileClicked.piece?.color && !chosenMove?.castleMove) {
         if (!chosenMove) return
-        if ((chosenMove.attackMove && chosenPiece.pieceType === 'pawn') && !tileClicked.piece) return
+        if ((chosenMove.attackMove && chosenTile.piece.pieceType === 'pawn') && !tileClicked.piece) return
         if (chosenMove.enPassantMove) {
-          const pawnToRemoveId = userColor === 'white' ? tileId + 8 : tileId - 8
-          removePiece(pawnToRemoveId)
+          await setPieceOnTile(chosenTile.piece, tileId, col, row)
+          await unSetPieceOnTile(tileId + (userColor === 'white' ? 8 : -8))
         }
-        await movePiece(chosenPiece, tileId, col, row)
+        await setPieceOnTile(chosenTile.piece, tileId, col, row)
+        await unSetPieceOnTile(chosenTile.id)
         return
       }
-      setChosenPiece(tileClicked.piece)
     }
 
-    if (!tileClicked.piece && chosenPiece) {
-      if (chosenMove?.castleMove && chosenMove?.col < chosenPiece.col) {
-        await castleRook('left')
-        await movePiece(chosenPiece, tileId, col, row)
+    if (!tileClicked.piece && chosenTile) {
+      if (chosenMove?.castleMove && chosenMove?.col < chosenTile.col) {
+        await castleRook('left', board, userColor, setPieceOnTile)
+        await setPieceOnTile(chosenTile?.piece, tileId, col, row)
+        await unSetPieceOnTile(chosenTile.id)
+        await unSetPieceOnTile(userColor === 'white' ? 56 : 0)
       }
-      if (chosenMove?.castleMove && chosenMove?.col > chosenPiece.col) {
-        await castleRook('right')
-
-        await movePiece(chosenPiece, tileId, col, row)
+      if (chosenMove?.castleMove && chosenMove?.col > chosenTile.col) {
+        await castleRook('right', board, userColor, setPieceOnTile)
+        await setPieceOnTile(chosenTile.piece, tileId, col, row)
+        await unSetPieceOnTile(chosenTile.id)
+        await unSetPieceOnTile(userColor === 'white' ? 63 : 7)
       }
       if (!chosenMove) return
-      await movePiece(chosenPiece, tileId, col, row)
+      await setPieceOnTile(chosenTile.piece, tileId, col, row)
     }
-  }, [chosenPiece, board])
+    setChosenTile(tileClicked)
+    calculateMoves()
+  }, [chosenTile?.piece, board])
 
   return (
     <div className='parent-container'>
@@ -141,7 +134,7 @@ const MainComp = () => {
                 <div key={idx} className={tile.color + ' tile w-full ' + (userColor === 'black' ? 'rotate-180' : '')} onClick={() => onClickTile(tile.id, tile.row, tile.col)} >
                   <div className=''>
                     {tile.piece && tile.piece.icon
-                      ? <Image src={tile.piece.icon.src} width="100%" height="100%" className={tile.id === chosenPiece?.id ? 'bg-red-500' : ''} />
+                      ? <Image src={tile.piece.icon.src} width="100%" height="100%" className={tile.id === chosenTile?.id ? 'bg-red-500' : ''} />
                       : <div />}
                   </div>
                 </div>
